@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tcgapi"
+version = "0.1.0"
+description = "Official Python SDK for tcgapi.dev — pricing data for Pokemon, Magic: The Gathering, Yu-Gi-Oh!, Lorcana, One Piece, and 80+ more trading card games."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "tcgapi.dev" }]
+keywords = [
+  "tcg",
+  "tcgplayer",
+  "pokemon",
+  "pokemon-tcg",
+  "pokemon-prices",
+  "magic-the-gathering",
+  "mtg",
+  "yugioh",
+  "lorcana",
+  "one-piece-tcg",
+  "flesh-and-blood",
+  "card-prices",
+  "tcg-api",
+  "tcgapi",
+  "trading-cards",
+  "sdk",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Games/Entertainment",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+dependencies = [
+  "httpx>=0.25",
+  "pydantic>=2.0",
+]
+
+[project.urls]
+Homepage = "https://tcgapi.dev"
+Documentation = "https://tcgapi.dev/api/"
+Source = "https://github.com/gordy-ftw/tcgapi-python"
+Issues = "https://github.com/gordy-ftw/tcgapi-python/issues"
+Quickstart = "https://tcgapi.dev/quickstart/"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0",
+  "pytest-asyncio>=0.21",
+  "ruff>=0.1",
+  "mypy>=1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["tcgapi"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/tcgapi", "/README.md", "/LICENSE"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP"]
+# UP037: keep string-quoted TYPE_CHECKING refs even with `from __future__ import annotations`
+# UP006/UP035: keep typing.List/Dict generic forms readable on 3.9
+ignore = ["E501", "UP037", "UP006", "UP035"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

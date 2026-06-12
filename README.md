@@ -155,13 +155,15 @@ Other error classes: `AuthError` (401), `TierError` (403), `NotFoundError` (404)
 
 ## Tiers
 
-| Plan | Daily requests | History | Bulk endpoints |
-|------|---------------|---------|----------------|
-| Free | 100 | 7 days | — |
-| Hobby ($9.99/mo) | 1,000 | 30 days | — |
-| Starter ($19.99/mo) | 2,500 | 90 days | Limited |
-| Pro ($49.99/mo) | 10,000 | Full | Yes |
-| Business ($99.99/mo) | 50,000 | Full | Yes |
+| Plan | Daily requests | History | Bulk endpoints | Sales velocity |
+|------|---------------|---------|----------------|----------------|
+| Free | 100 | 7 days | — | — |
+| Hobby ($9.99/mo) | 1,000 | 30 days | — | — |
+| Starter ($19.99/mo) | 2,500 | 90 days | Limited | — |
+| Pro ($49.99/mo) | 10,000 | Full | Yes | Yes |
+| Business ($99.99/mo) | 50,000 | Full | Yes | Yes |
+
+Sales velocity = `sales_volume`, `avg_sales_price`, and `sales_as_of` on price responses (Pro+). The fields are absent below Pro.
 
 Or pay per request via [x402](https://tcgapi.dev/api/x402) — no signup, USDC on Base or Solana.
 

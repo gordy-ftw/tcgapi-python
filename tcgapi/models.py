@@ -70,6 +70,10 @@ class Price(_Base):
     price_change_7d: float | None = None
     price_change_30d: float | None = None
     last_updated_at: str | None = None
+    # Sales velocity — Pro/Business tiers only; the API omits these below Pro.
+    sales_volume: int | None = None
+    avg_sales_price: float | None = None
+    sales_as_of: str | None = None
 
 
 class CardWithPrice(_Base):

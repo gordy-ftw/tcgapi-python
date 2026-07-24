@@ -137,6 +137,33 @@ class BulkCard(Card):
     prices: list[Price] = Field(default_factory=list)
 
 
+class ConditionPrice(_Base):
+    """Per-condition price floors for one (printing, condition) pair (Pro+)."""
+
+    card_id: int
+    printing: str | None = None
+    # TCGPlayer condition grade, e.g. "Near Mint", "Lightly Played".
+    condition: str
+    language: str | None = None
+    # Lowest listed item price for this printing + condition.
+    low_price: float | None = None
+    # Lowest listed price including shipping.
+    lowest_with_shipping: float | None = None
+    # Median of sampled shipping-inclusive prices. None when sample_count < 3 —
+    # prefer this over low_price when pricing inventory (robust to $0.01 junk listings).
+    median_with_shipping: float | None = None
+    # Listings sampled for this row (not total market depth — see ConditionMeta.condition_counts).
+    sample_count: int | None = None
+    last_updated_at: str | None = None
+
+
+class BulkConditionRow(ConditionPrice):
+    """Row shape of /bulk/conditions — a ConditionPrice plus card identity."""
+
+    name: str | None = None
+    tcgplayer_id: int | None = None
+
+
 class PriceHistoryPoint(_Base):
     date: str
     printing: str | None = None
@@ -151,6 +178,20 @@ class Meta(_Base):
     page: int | None = None
     per_page: int | None = None
     has_more: bool | None = None
+
+
+class ConditionMeta(Meta):
+    """Meta for /cards/{id}/prices/conditions — cache/staleness signals."""
+
+    # True when served from cache without a live refresh.
+    cached: bool | None = None
+    # Present (True) when rows are older than 24h and a live refresh
+    # wasn't possible (quota or upstream failure).
+    stale: bool | None = None
+    as_of: str | None = None
+    # Total live listings per condition across ALL printings
+    # (only present on live-refreshed responses).
+    condition_counts: dict[str, int] | None = None
 
 
 class RateLimit(_Base):

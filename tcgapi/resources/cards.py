@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-from ..models import BulkCard, Card, Price, PriceHistoryPoint, Response
+from ..models import BulkCard, Card, ConditionMeta, ConditionPrice, Price, PriceHistoryPoint, Response
 from ._base import parse_response
 
 if TYPE_CHECKING:
@@ -25,6 +25,15 @@ class CardsResource:
     def prices(self, card_id: int, *, printing: str | None = None) -> Response[list[Price]]:
         body = self._client._request("GET", f"/cards/{card_id}/prices", {"printing": printing})
         return parse_response(list[Price], body)
+
+    def conditions(
+        self, card_id: int, *, printing: str | None = None
+    ) -> Response[list[ConditionPrice]]:
+        # Pro+ only. `meta` is a ConditionMeta (cached/stale/as_of/condition_counts).
+        body = self._client._request(
+            "GET", f"/cards/{card_id}/prices/conditions", {"printing": printing}
+        )
+        return parse_response(list[ConditionPrice], body, meta_model=ConditionMeta)
 
     def by_tcgplayer_id(self, tcgplayer_id: int) -> Response[BulkCard]:
         body = self._client._request("GET", f"/cards/tcgplayer/{tcgplayer_id}")
@@ -62,6 +71,15 @@ class AsyncCardsResource:
     async def prices(self, card_id: int, *, printing: str | None = None) -> Response[list[Price]]:
         body = await self._client._request("GET", f"/cards/{card_id}/prices", {"printing": printing})
         return parse_response(list[Price], body)
+
+    async def conditions(
+        self, card_id: int, *, printing: str | None = None
+    ) -> Response[list[ConditionPrice]]:
+        # Pro+ only. `meta` is a ConditionMeta (cached/stale/as_of/condition_counts).
+        body = await self._client._request(
+            "GET", f"/cards/{card_id}/prices/conditions", {"printing": printing}
+        )
+        return parse_response(list[ConditionPrice], body, meta_model=ConditionMeta)
 
     async def by_tcgplayer_id(self, tcgplayer_id: int) -> Response[BulkCard]:
         body = await self._client._request("GET", f"/cards/tcgplayer/{tcgplayer_id}")

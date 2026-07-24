@@ -25,9 +25,12 @@ from .models import (
     ApiKeyCreated,
     ApiKeySummary,
     BulkCard,
+    BulkConditionRow,
     BulkPriceRow,
     Card,
     CardWithPrice,
+    ConditionMeta,
+    ConditionPrice,
     Game,
     Meta,
     Price,
@@ -39,7 +42,7 @@ from .models import (
     UsageResponse,
 )
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 __all__ = [
     "TCGApi",
     "AsyncTCGApi",
@@ -59,6 +62,9 @@ __all__ = [
     "PriceHistoryPoint",
     "BulkCard",
     "BulkPriceRow",
+    "ConditionPrice",
+    "BulkConditionRow",
+    "ConditionMeta",
     "ApiKeySummary",
     "ApiKeyCreated",
     "UsageResponse",

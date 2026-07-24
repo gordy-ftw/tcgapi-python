@@ -91,6 +91,22 @@ bulk = tcg.bulk.prices([1, 2, 3, ...])  # thousands ok
 print(f"Got prices for {len(bulk.data)} card-printings")
 ```
 
+### Per-condition prices (Pro+)
+
+```python
+# Price floors per (printing, condition) — Near Mint, Lightly Played, etc.
+conditions = tcg.cards.conditions(13217, printing="Holofoil")
+for row in conditions.data:
+    # median_with_shipping is robust to $0.01 junk listings — prefer it when pricing inventory
+    print(f"{row.printing} / {row.condition}: ${row.median_with_shipping}")
+print(conditions.meta.cached, conditions.meta.condition_counts)
+
+# Bulk variant — up to 500 cards per call, served from the nightly cache.
+# Cards without condition data yet are absent; fetch them once via
+# tcg.cards.conditions() to warm them.
+bulk_conditions = tcg.bulk.conditions([13217, 13218, 13219])
+```
+
 ### Top movers
 
 ```python

@@ -9,7 +9,7 @@ import os
 
 import pytest
 
-from tcgapi import AsyncTCGApi, NotFoundError, TCGApi, TcgApiError
+from tcgapi import AsyncTCGApi, NotFoundError, TCGApi, TcgApiError, TierError
 
 HAS_KEY = bool(os.environ.get("TCGAPI_KEY"))
 
@@ -55,6 +55,42 @@ def test_search_cards_without_key_raises_402() -> None:
         with pytest.raises(TcgApiError) as exc_info:
             tcg.search.cards("charizard")
         assert exc_info.value.status == 402
+
+
+@pytest.mark.skipif(HAS_KEY, reason="without a key we expect a 402")
+def test_card_conditions_without_key_raises_402() -> None:
+    with TCGApi() as tcg:
+        with pytest.raises(TcgApiError) as exc_info:
+            tcg.cards.conditions(13217)
+        assert exc_info.value.status == 402
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="cards.conditions is Pro-gated; needs API key")
+def test_card_conditions() -> None:
+    with TCGApi() as tcg:
+        try:
+            resp = tcg.cards.conditions(13217)
+            assert isinstance(resp.data, list)
+        except TierError:
+            pass  # sub-Pro keys get the tier gate — that shape is also correct
+
+
+@pytest.mark.skipif(HAS_KEY, reason="without a key we expect a 402")
+def test_bulk_conditions_without_key_raises_402() -> None:
+    with TCGApi() as tcg:
+        with pytest.raises(TcgApiError) as exc_info:
+            tcg.bulk.conditions([13217])
+        assert exc_info.value.status == 402
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="bulk.conditions is Pro-gated; needs API key")
+def test_bulk_conditions() -> None:
+    with TCGApi() as tcg:
+        try:
+            resp = tcg.bulk.conditions([13217])
+            assert isinstance(resp.data, list)
+        except TierError:
+            pass  # sub-Pro keys get the tier gate — that shape is also correct
 
 
 async def test_async_games_list() -> None:

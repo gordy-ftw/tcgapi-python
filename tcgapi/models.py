@@ -62,6 +62,9 @@ class Price(_Base):
     card_id: int
     printing: str | None = None
     market_price: float | None = None
+    # UTC date (YYYY-MM-DD) TCGPlayer last reported market_price. Older than the other
+    # fields when the printing has had no market price recently (the last price is kept).
+    market_price_as_of: str | None = None
     low_price: float | None = None
     median_price: float | None = None
     lowest_with_shipping: float | None = None
@@ -88,6 +91,9 @@ class CardWithPrice(_Base):
     total_listings: int | None = None
     printing: str | None = None
     market_price: float | None = None
+    # UTC date (YYYY-MM-DD) TCGPlayer last reported market_price. Older than the other
+    # fields when the printing has had no market price recently (the last price is kept).
+    market_price_as_of: str | None = None
     low_price: float | None = None
     median_price: float | None = None
     lowest_with_shipping: float | None = None
@@ -109,6 +115,9 @@ class PriceMover(_Base):
     game_slug: str | None = None
     printing: str | None = None
     market_price: float
+    # UTC date (YYYY-MM-DD) TCGPlayer last reported market_price. Older than the other
+    # fields when the printing has had no market price recently (the last price is kept).
+    market_price_as_of: str | None = None
     price_change: float
     last_updated_at: str | None = None
     image_url: str | None = None
@@ -122,6 +131,9 @@ class BulkPriceRow(_Base):
     foil_only: int | None = None
     printing: str | None = None
     market_price: float | None = None
+    # UTC date (YYYY-MM-DD) TCGPlayer last reported market_price. Older than the other
+    # fields when the printing has had no market price recently (the last price is kept).
+    market_price_as_of: str | None = None
     low_price: float | None = None
     median_price: float | None = None
     lowest_with_shipping: float | None = None

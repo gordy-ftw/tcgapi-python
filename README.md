@@ -120,6 +120,18 @@ for m in movers.data:
     print(f"{m.name} ({m.set_name}): +{m.price_change}% — ${m.market_price}")
 ```
 
+### How old is a market price?
+
+Every price row carries `market_price_as_of`: the UTC date TCGPlayer last reported
+that printing's market price. It is older than `last_updated_at` when a printing
+has stopped selling — the last price is kept and dated rather than dropped.
+
+```python
+prices = tcg.cards.prices(123456)
+for p in prices.data:
+    print(p.printing, p.market_price, "as of", p.market_price_as_of)
+```
+
 ### Price history (Hobby+)
 
 ```python

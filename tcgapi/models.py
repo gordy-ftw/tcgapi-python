@@ -360,6 +360,38 @@ class IdentifyMeta(Meta):
     scans_remaining: int | None = None
 
 
+class ScanDay(_Base):
+    """One UTC day of scans (GET /identify/usage)."""
+
+    date: str
+    # Scans used that day
+    scans: int
+    # Reads that failed on the reader's side and were refunded
+    refunded: int = 0
+    matched: int = 0
+    ambiguous: int = 0
+    retake: int = 0
+    not_found: int = 0
+    unsupported: int = 0
+
+
+class ScanLedgerEntry(_Base):
+    # "trial" or "purchase"
+    reason: str
+    scans: int
+    amount_cents: int | None = None
+    created_at: str
+
+
+class ScanUsage(_Base):
+    """GET /identify/usage: balance, the last 30 days (oldest first) and the trial/purchase ledger."""
+
+    balance: int
+    trial_pending: bool
+    days: list[ScanDay] = Field(default_factory=list)
+    ledger: list[ScanLedgerEntry] = Field(default_factory=list)
+
+
 class Response(_Base, Generic[T]):
     """Wrapper returned by every method. Reach `.data`, `.meta`, `.rate_limit`."""
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from typing import IO, TYPE_CHECKING, Union
 
-from ..models import IdentifyMeta, IdentifyResult, Response
+from ..models import IdentifyMeta, IdentifyResult, Response, ScanUsage
 from ._base import parse_response
 
 if TYPE_CHECKING:
@@ -50,6 +50,11 @@ class IdentifyResource:
         )
         return parse_response(IdentifyResult, body, meta_model=IdentifyMeta)
 
+    def usage(self) -> Response[ScanUsage]:
+        """Scan balance, scans per day for the last 30 days by outcome, and the
+        trial/purchase ledger. Free: uses no scan and no daily quota."""
+        return parse_response(ScanUsage, self._client._request("GET", "/identify/usage"))
+
 
 class AsyncIdentifyResource:
     def __init__(self, client: "AsyncTCGApi") -> None:
@@ -63,3 +68,7 @@ class AsyncIdentifyResource:
             "POST", "/identify", _params(game, include_prices), files=_files(image), timeout=IDENTIFY_TIMEOUT
         )
         return parse_response(IdentifyResult, body, meta_model=IdentifyMeta)
+
+    async def usage(self) -> Response[ScanUsage]:
+        """Async variant of IdentifyResource.usage."""
+        return parse_response(ScanUsage, await self._client._request("GET", "/identify/usage"))

@@ -181,6 +181,14 @@ with TCGApi() as tcg:
 Accepts raw bytes, a path, or an open binary file. A `402` with code
 `SCAN_BALANCE_EMPTY` means the balance is used up. `AsyncTCGApi` has the same method.
 
+`identify.usage()` returns the balance, scans per day for the last 30 days by outcome and
+the trial and pack purchases. It is free: no scan, no daily quota.
+
+```python
+usage = tcg.identify.usage().data
+print(usage.balance, usage.days[-1].scans, usage.days[-1].matched)
+```
+
 ## Rate limits
 
 Every successful response carries the live rate-limit budget:

@@ -130,3 +130,19 @@ async def test_async_identify_without_key_reaches_x402() -> None:
         with pytest.raises(TcgApiError) as exc:
             await tcg.identify.photo(_charizard_photo())
         assert exc.value.status == 402
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="needs TCGAPI_KEY")
+def test_identify_usage_is_free() -> None:
+    with TCGApi() as tcg:
+        a = tcg.identify.usage()
+        b = tcg.identify.usage()
+        assert len(a.data.days) == 30
+        assert b.data.balance == a.data.balance  # reading usage takes no scan
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="needs TCGAPI_KEY")
+async def test_async_identify_usage() -> None:
+    async with AsyncTCGApi() as tcg:
+        resp = await tcg.identify.usage()
+        assert len(resp.data.days) == 30

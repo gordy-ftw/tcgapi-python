@@ -11,6 +11,7 @@ from .resources.bulk import AsyncBulkResource
 from .resources.cards import AsyncCardsResource
 from .resources.export import AsyncExportResource
 from .resources.games import AsyncGamesResource
+from .resources.identify import AsyncIdentifyResource
 from .resources.keys import AsyncKeysResource
 from .resources.prices import AsyncPricesResource
 from .resources.search import AsyncSearchResource
@@ -43,13 +44,24 @@ class AsyncTCGApi(_BaseTransport):
         self.export = AsyncExportResource(self)
         self.keys = AsyncKeysResource(self)
         self.usage = AsyncUsageResource(self)
+        self.identify = AsyncIdentifyResource(self)
 
-    async def _request(self, method: str, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def _request(
+        self,
+        method: str,
+        path: str,
+        params: dict[str, Any] | None = None,
+        *,
+        files: dict[str, Any] | None = None,
+        timeout: float | None = None,
+    ) -> dict[str, Any]:
         resp = await self._client.request(
             method,
             self.base_url + path,
             params=self._clean_params(params),
             headers=self._headers(),
+            files=files,
+            timeout=timeout if timeout is not None else httpx.USE_CLIENT_DEFAULT,
         )
         return self._handle_response(resp)
 

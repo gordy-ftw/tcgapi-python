@@ -11,6 +11,7 @@ from .resources.bulk import BulkResource
 from .resources.cards import CardsResource
 from .resources.export import ExportResource
 from .resources.games import GamesResource
+from .resources.identify import IdentifyResource
 from .resources.keys import KeysResource
 from .resources.prices import PricesResource
 from .resources.search import SearchResource
@@ -47,13 +48,24 @@ class TCGApi(_BaseTransport):
         self.export = ExportResource(self)
         self.keys = KeysResource(self)
         self.usage = UsageResource(self)
+        self.identify = IdentifyResource(self)
 
-    def _request(self, method: str, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    def _request(
+        self,
+        method: str,
+        path: str,
+        params: dict[str, Any] | None = None,
+        *,
+        files: dict[str, Any] | None = None,
+        timeout: float | None = None,
+    ) -> dict[str, Any]:
         resp = self._client.request(
             method,
             self.base_url + path,
             params=self._clean_params(params),
             headers=self._headers(),
+            files=files,
+            timeout=timeout if timeout is not None else httpx.USE_CLIENT_DEFAULT,
         )
         return self._handle_response(resp)
 

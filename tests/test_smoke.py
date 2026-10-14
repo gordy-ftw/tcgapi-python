@@ -97,3 +97,36 @@ async def test_async_games_list() -> None:
     async with AsyncTCGApi() as tcg:
         resp = await tcg.games.list(per_page=3)
         assert len(resp.data) > 0
+
+
+def _charizard_photo() -> bytes:
+    # Base Set Charizard (TCGPlayer 42382), TCGPlayer's own product photo.
+    import httpx
+
+    return httpx.get("https://product-images.tcgplayer.com/fit-in/1000x1000/42382.jpg").content
+
+
+@pytest.mark.skipif(HAS_KEY, reason="checks the keyless path")
+def test_identify_without_key_reaches_x402() -> None:
+    # A malformed upload would be a 400 INVALID_IMAGE; reaching the 402 offer proves the multipart body is right.
+    with TCGApi() as tcg:
+        with pytest.raises(TcgApiError) as exc:
+            tcg.identify.photo(_charizard_photo())
+        assert exc.value.status == 402
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="uses one scan; needs TCGAPI_KEY")
+def test_identify_reads_a_card() -> None:
+    with TCGApi() as tcg:
+        resp = tcg.identify.photo(_charizard_photo(), game="pokemon", include_prices=True)
+        assert resp.data.candidates[0].tcgplayer_id == 42382
+        assert resp.data.candidates[0].prices
+        assert resp.meta is not None and resp.meta.charged == "scan"
+
+
+@pytest.mark.skipif(HAS_KEY, reason="checks the keyless path")
+async def test_async_identify_without_key_reaches_x402() -> None:
+    async with AsyncTCGApi() as tcg:
+        with pytest.raises(TcgApiError) as exc:
+            await tcg.identify.photo(_charizard_photo())
+        assert exc.value.status == 402

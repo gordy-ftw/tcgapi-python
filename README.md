@@ -158,6 +158,29 @@ async def main():
 asyncio.run(main())
 ```
 
+
+### Identify a card from a photo
+
+`identify.photo()` reads one photo of a card, slab or sealed product and returns ranked
+catalog candidates. It uses one **scan** per photo, separate from your daily request
+limit: every account gets 25 free scans, then prepaid packs from the dashboard.
+
+```python
+from tcgapi import TCGApi
+
+with TCGApi() as tcg:
+    result = tcg.identify.photo("card.jpg", include_prices=True)
+    if result.data.status == "matched":
+        top = result.data.candidates[0]
+        print(top.name, top.set.name, top.prices)
+    elif result.data.status == "retake":
+        print("Retake:", result.data.message)
+    print("scans left:", result.meta.scans_remaining)
+```
+
+Accepts raw bytes, a path, or an open binary file. A `402` with code
+`SCAN_BALANCE_EMPTY` means the balance is used up. `AsyncTCGApi` has the same method.
+
 ## Rate limits
 
 Every successful response carries the live rate-limit budget:

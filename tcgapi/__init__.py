@@ -32,6 +32,10 @@ from .models import (
     ConditionMeta,
     ConditionPrice,
     Game,
+    IdentifyCandidate,
+    IdentifyMeta,
+    IdentifyRead,
+    IdentifyResult,
     Meta,
     Price,
     PriceHistoryPoint,
@@ -40,9 +44,10 @@ from .models import (
     Response,
     Set,
     UsageResponse,
+    UsageScans,
 )
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __all__ = [
     "TCGApi",
     "AsyncTCGApi",
@@ -54,6 +59,11 @@ __all__ = [
     "RateLimitError",
     # models
     "Game",
+    "IdentifyResult",
+    "IdentifyCandidate",
+    "IdentifyRead",
+    "IdentifyMeta",
+    "UsageScans",
     "Set",
     "Card",
     "CardWithPrice",

@@ -250,10 +250,114 @@ class UsageSubscription(_Base):
     status: str
 
 
+class UsageScans(_Base):
+    """Photo identification scans (POST /v1/identify), billed apart from the daily quota."""
+
+    balance: int
+    trial_pending: bool
+
+
 class UsageResponse(_Base):
     account: UsageAccount
     keys: list[UsageKey] = Field(default_factory=list)
     subscription: UsageSubscription | None = None
+    scans: UsageScans | None = None
+
+
+class IdentifySet(_Base):
+    id: int
+    name: str
+    code: str | None = None
+
+
+class IdentifyGame(_Base):
+    slug: str
+    name: str
+
+
+class IdentifyMatch(_Base):
+    # exact | partial (same number, set total on one side only) | unknown
+    number: str
+    name: float
+    set: float
+    # False when the card's title names an edition stamp the photo doesn't show, or the reverse
+    edition: bool | None = None
+
+
+class IdentifyPrice(_Base):
+    printing: str
+    market_price: float | None = None
+    low_price: float | None = None
+    median_price: float | None = None
+    lowest_with_shipping: float | None = None
+    price_change_7d: float | None = None
+    price_change_30d: float | None = None
+    last_updated_at: str | None = None
+
+
+class IdentifyCandidate(_Base):
+    card_id: int
+    tcgplayer_id: int | None = None
+    name: str
+    number: str | None = None
+    rarity: str | None = None
+    product_type: str | None = None
+    set: IdentifySet
+    game: IdentifyGame
+    image_url: str | None = None
+    match: IdentifyMatch
+    printings: list[str] = Field(default_factory=list)
+    # The printing the photo points to (finish, 1st Edition stamp), when it decides one
+    suggested_printing: str | None = None
+    score: float
+    # Only on the first candidate, with include_prices=True
+    prices: list[IdentifyPrice] | None = None
+
+
+class IdentifyGrade(_Base):
+    company: str | None = None
+    grade: str | None = None
+
+
+class IdentifyReadable(_Base):
+    name: bool
+    number: bool
+    set: bool
+
+
+class IdentifyRead(_Base):
+    """What the photo shows. Empty fields are unreadable, never guessed."""
+
+    game: str
+    name: str | None = None
+    number: str | None = None
+    set: str | None = None
+    language: str | None = None
+    kind: str
+    product_type: str | None = None
+    finish: str
+    # The edition mark seen; None when clearly none; "unclear" when hidden
+    stamp: str | None = None
+    grade: IdentifyGrade | None = None
+    readable: IdentifyReadable
+    notes: str | None = None
+
+
+class IdentifyResult(_Base):
+    id: str
+    # matched | ambiguous | retake | not_found | unsupported
+    status: str
+    message: str | None = None
+    read: IdentifyRead | None = None
+    candidates: list[IdentifyCandidate] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class IdentifyMeta(Meta):
+    # "scan" or "x402"
+    charged: str | None = None
+    # Scans left after this one (API-key requests)
+    scans_remaining: int | None = None
 
 
 class Response(_Base, Generic[T]):

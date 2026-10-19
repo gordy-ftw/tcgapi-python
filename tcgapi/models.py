@@ -73,6 +73,9 @@ class Price(_Base):
     price_change_7d: float | None = None
     price_change_30d: float | None = None
     last_updated_at: str | None = None
+    # ISO 8601 UTC time since which TCGPlayer has priced nothing for this product (the
+    # row keeps the last prices reported and is not refreshed daily). None while priced.
+    no_market_price_since: str | None = None
     # Sales velocity — Pro/Business tiers only; the API omits these below Pro.
     sales_volume: int | None = None
     avg_sales_price: float | None = None
@@ -98,6 +101,9 @@ class CardWithPrice(_Base):
     median_price: float | None = None
     lowest_with_shipping: float | None = None
     price_updated_at: str | None = None
+    # ISO 8601 UTC time since which TCGPlayer has priced nothing for this product (the
+    # row keeps the last prices reported and is not refreshed daily). None while priced.
+    no_market_price_since: str | None = None
     image_url: str | None = None
     game_name: str | None = None
     game_slug: str | None = None
@@ -120,6 +126,9 @@ class PriceMover(_Base):
     market_price_as_of: str | None = None
     price_change: float
     last_updated_at: str | None = None
+    # ISO 8601 UTC time since which TCGPlayer has priced nothing for this product (the
+    # row keeps the last prices reported and is not refreshed daily). None while priced.
+    no_market_price_since: str | None = None
     image_url: str | None = None
 
 
@@ -142,6 +151,9 @@ class BulkPriceRow(_Base):
     price_change_7d: float | None = None
     price_change_30d: float | None = None
     last_updated_at: str | None = None
+    # ISO 8601 UTC time since which TCGPlayer has priced nothing for this product (the
+    # row keeps the last prices reported and is not refreshed daily). None while priced.
+    no_market_price_since: str | None = None
     image_url: str | None = None
 
 
@@ -293,6 +305,8 @@ class IdentifyPrice(_Base):
     price_change_7d: float | None = None
     price_change_30d: float | None = None
     last_updated_at: str | None = None
+    # See Price.no_market_price_since.
+    no_market_price_since: str | None = None
 
 
 class IdentifyCandidate(_Base):

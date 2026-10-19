@@ -132,6 +132,20 @@ for p in prices.data:
     print(p.printing, p.market_price, "as of", p.market_price_as_of)
 ```
 
+### Products TCGPlayer no longer prices
+
+When TCGPlayer stops reporting any price for a product (typically out of print with
+no listings), its rows keep the last prices reported and are no longer refreshed
+daily. `no_market_price_since` says since when; it is `None` while the printing is
+priced.
+
+```python
+prices = tcg.cards.prices(123456)
+for p in prices.data:
+    if p.no_market_price_since:
+        print(p.printing, "unpriced on TCGPlayer since", p.no_market_price_since)
+```
+
 ### Price history (Hobby+)
 
 ```python

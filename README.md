@@ -89,6 +89,8 @@ if surging_sparks:
 # Auto-chunks if you pass more than 500 IDs.
 bulk = tcg.bulk.prices([1, 2, 3, ...])  # thousands ok
 print(f"Got prices for {len(bulk.data)} card-printings")
+# include="ebay" adds each row's eBay summary (1 credit + 1 per card with eBay data)
+with_ebay = tcg.bulk.prices([1, 2, 3], include="ebay")
 ```
 
 ### Per-condition prices (Pro+)
@@ -212,6 +214,8 @@ with TCGApi() as tcg:
 
 Accepts raw bytes, a path, or an open binary file. A `402` with code
 `SCAN_BALANCE_EMPTY` means the balance is used up. `AsyncTCGApi` has the same method.
+`include_ebay=True` adds the prices with each printing's eBay sold prices (`ebay`, and on a
+graded slab `ebay.slab_grade` for the grade on the label), on every plan at no extra charge.
 
 `identify.usage()` returns the balance, scans per day for the last 30 days by outcome and
 the trial and pack purchases. It is free: no scan, no daily quota.

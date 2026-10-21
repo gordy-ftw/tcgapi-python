@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-from ..models import BulkCard, BulkConditionRow, BulkPriceRow, PriceHistoryPoint, Response
+from ..models import BulkCard, BulkConditionRow, BulkPriceRow, Meta, PriceHistoryPoint, Response
 from ._base import parse_response
 
 if TYPE_CHECKING:
@@ -17,6 +17,8 @@ BULK_HISTORY_MAX = 50
 BULK_CONDITIONS_MAX = 500
 
 RangeLiteral = Literal["month", "quarter", "year", "all"]
+# Pro+; adds each row's eBay summary (1 credit plus 1 per card with eBay data).
+BulkPricesIncludeLiteral = Literal["ebay"]
 
 
 def _ids(ids: list[int]) -> str:
@@ -29,19 +31,28 @@ class BulkResource:
     def __init__(self, client: "TCGApi") -> None:
         self._client = client
 
-    def prices(self, ids: list[int]) -> Response[list[BulkPriceRow]]:
+    def prices(
+        self, ids: list[int], *, include: BulkPricesIncludeLiteral | None = None
+    ) -> Response[list[BulkPriceRow]]:
         if len(ids) <= BULK_PRICES_MAX:
-            body = self._client._request("GET", "/bulk/prices", {"ids": _ids(ids)})
+            body = self._client._request("GET", "/bulk/prices", {"ids": _ids(ids), "include": include})
             return parse_response(list[BulkPriceRow], body)
         rows: list[BulkPriceRow] = []
         last: Response[list[BulkPriceRow]] | None = None
+        credits: int | None = None
         for i in range(0, len(ids), BULK_PRICES_MAX):
             chunk = ids[i : i + BULK_PRICES_MAX]
-            body = self._client._request("GET", "/bulk/prices", {"ids": _ids(chunk)})
+            body = self._client._request("GET", "/bulk/prices", {"ids": _ids(chunk), "include": include})
             resp: Response[list[BulkPriceRow]] = parse_response(list[BulkPriceRow], body)
             rows.extend(resp.data)
             last = resp
-        return Response[list[BulkPriceRow]](data=rows, rate_limit=last.rate_limit if last else None)
+            if resp.meta and resp.meta.credits_consumed is not None:
+                credits = (credits or 0) + resp.meta.credits_consumed
+        # With include, meta.credits_consumed is the total across chunks.
+        meta = Meta(total=len(rows), credits_consumed=credits) if credits is not None else None
+        return Response[list[BulkPriceRow]](
+            data=rows, meta=meta, rate_limit=last.rate_limit if last else None
+        )
 
     def cards(self, ids: list[int]) -> Response[list[BulkCard]]:
         if len(ids) <= BULK_CARDS_MAX:
@@ -105,19 +116,30 @@ class AsyncBulkResource:
     def __init__(self, client: "AsyncTCGApi") -> None:
         self._client = client
 
-    async def prices(self, ids: list[int]) -> Response[list[BulkPriceRow]]:
+    async def prices(
+        self, ids: list[int], *, include: BulkPricesIncludeLiteral | None = None
+    ) -> Response[list[BulkPriceRow]]:
         if len(ids) <= BULK_PRICES_MAX:
-            body = await self._client._request("GET", "/bulk/prices", {"ids": _ids(ids)})
+            body = await self._client._request("GET", "/bulk/prices", {"ids": _ids(ids), "include": include})
             return parse_response(list[BulkPriceRow], body)
         rows: list[BulkPriceRow] = []
         last: Response[list[BulkPriceRow]] | None = None
+        credits: int | None = None
         for i in range(0, len(ids), BULK_PRICES_MAX):
             chunk = ids[i : i + BULK_PRICES_MAX]
-            body = await self._client._request("GET", "/bulk/prices", {"ids": _ids(chunk)})
+            body = await self._client._request(
+                "GET", "/bulk/prices", {"ids": _ids(chunk), "include": include}
+            )
             resp: Response[list[BulkPriceRow]] = parse_response(list[BulkPriceRow], body)
             rows.extend(resp.data)
             last = resp
-        return Response[list[BulkPriceRow]](data=rows, rate_limit=last.rate_limit if last else None)
+            if resp.meta and resp.meta.credits_consumed is not None:
+                credits = (credits or 0) + resp.meta.credits_consumed
+        # With include, meta.credits_consumed is the total across chunks.
+        meta = Meta(total=len(rows), credits_consumed=credits) if credits is not None else None
+        return Response[list[BulkPriceRow]](
+            data=rows, meta=meta, rate_limit=last.rate_limit if last else None
+        )
 
     async def cards(self, ids: list[int]) -> Response[list[BulkCard]]:
         if len(ids) <= BULK_CARDS_MAX:

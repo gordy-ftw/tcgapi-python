@@ -87,6 +87,12 @@ class EbaySale(_Base):
     url: str | None = None
 
 
+class EbaySlabGrade(EbayStats):
+    """identify.photo(include_ebay=True) on a graded slab: eBay figures for the grade on the label."""
+
+    label: str | None = None
+
+
 class EbaySummary(EbayStats):
     """eBay sold listings for one printing. Top-level figures are ungraded copies of every condition."""
 
@@ -96,6 +102,8 @@ class EbaySummary(EbayStats):
     as_of: str | None = None
     # Only with include="ebay_sales": the included sales in the 30-day window, newest first.
     sales: list[EbaySale] | None = None
+    # Only from identify.photo(include_ebay=True) on a graded slab.
+    slab_grade: EbaySlabGrade | None = None
 
 
 class EbayHistoryGrade(_Base):
@@ -212,6 +220,8 @@ class BulkPriceRow(_Base):
     # row keeps the last prices reported and is not refreshed daily). None while priced.
     no_market_price_since: str | None = None
     image_url: str | None = None
+    # Only with include="ebay" (Pro+): the printing's eBay summary (without sales), or None.
+    ebay: EbaySummary | None = None
 
 
 class BulkCard(Card):
@@ -262,7 +272,8 @@ class Meta(_Base):
     page: int | None = None
     per_page: int | None = None
     has_more: bool | None = None
-    # 2 on requests with an eBay include; absent otherwise.
+    # Credits charged on requests with an eBay include (2 on card prices/history;
+    # 1 + cards with eBay data on bulk prices); absent otherwise.
     credits_consumed: int | None = None
 
 
@@ -369,6 +380,9 @@ class IdentifyPrice(_Base):
     last_updated_at: str | None = None
     # See Price.no_market_price_since.
     no_market_price_since: str | None = None
+    # Only with include_ebay=True: the printing's eBay summary (without sales;
+    # slab_grade on a slab), or None.
+    ebay: EbaySummary | None = None
 
 
 class IdentifyCandidate(_Base):
@@ -386,7 +400,7 @@ class IdentifyCandidate(_Base):
     # The printing the photo points to (finish, 1st Edition stamp), when it decides one
     suggested_printing: str | None = None
     score: float
-    # Only on the first candidate, with include_prices=True
+    # Only on the first candidate, with include_prices=True or include_ebay=True
     prices: list[IdentifyPrice] | None = None
 
 

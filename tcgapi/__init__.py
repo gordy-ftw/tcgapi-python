@@ -34,6 +34,7 @@ from .models import (
     EbayHistoryGrade,
     EbayHistoryPoint,
     EbaySale,
+    EbaySlabGrade,
     EbayStats,
     EbaySummary,
     Game,
@@ -55,7 +56,7 @@ from .models import (
     UsageScans,
 )
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 __all__ = [
     "TCGApi",
     "AsyncTCGApi",
@@ -86,6 +87,7 @@ __all__ = [
     "EbaySale",
     "EbayHistoryPoint",
     "EbayHistoryGrade",
+    "EbaySlabGrade",
     "BulkCard",
     "BulkPriceRow",
     "ConditionPrice",

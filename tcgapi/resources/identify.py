@@ -30,15 +30,23 @@ def _files(image: Image) -> dict[str, tuple[str, bytes]]:
     return {"image": ("photo", data)}
 
 
-def _params(game: str | None, include_prices: bool) -> dict[str, object | None]:
-    return {"game": game, "include": "prices" if include_prices else None}
+def _params(game: str | None, include_prices: bool, include_ebay: bool = False) -> dict[str, object | None]:
+    # include_ebay implies prices: the top candidate's prices, each with its eBay summary.
+    return {"game": game, "include": "ebay" if include_ebay else "prices" if include_prices else None}
 
 
 class IdentifyResource:
     def __init__(self, client: "TCGApi") -> None:
         self._client = client
 
-    def photo(self, image: Image, *, game: str | None = None, include_prices: bool = False) -> Response[IdentifyResult]:
+    def photo(
+        self,
+        image: Image,
+        *,
+        game: str | None = None,
+        include_prices: bool = False,
+        include_ebay: bool = False,
+    ) -> Response[IdentifyResult]:
         """Identify a card or sealed product from one photo.
 
         Uses one scan from the account's balance (25 free, then prepaid packs),
@@ -46,7 +54,11 @@ class IdentifyResource:
         means no scans are left. `meta` is an IdentifyMeta (scans_remaining).
         """
         body = self._client._request(
-            "POST", "/identify", _params(game, include_prices), files=_files(image), timeout=IDENTIFY_TIMEOUT
+            "POST",
+            "/identify",
+            _params(game, include_prices, include_ebay),
+            files=_files(image),
+            timeout=IDENTIFY_TIMEOUT,
         )
         return parse_response(IdentifyResult, body, meta_model=IdentifyMeta)
 
@@ -61,11 +73,20 @@ class AsyncIdentifyResource:
         self._client = client
 
     async def photo(
-        self, image: Image, *, game: str | None = None, include_prices: bool = False
+        self,
+        image: Image,
+        *,
+        game: str | None = None,
+        include_prices: bool = False,
+        include_ebay: bool = False,
     ) -> Response[IdentifyResult]:
         """Async variant of IdentifyResource.photo."""
         body = await self._client._request(
-            "POST", "/identify", _params(game, include_prices), files=_files(image), timeout=IDENTIFY_TIMEOUT
+            "POST",
+            "/identify",
+            _params(game, include_prices, include_ebay),
+            files=_files(image),
+            timeout=IDENTIFY_TIMEOUT,
         )
         return parse_response(IdentifyResult, body, meta_model=IdentifyMeta)
 

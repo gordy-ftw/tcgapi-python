@@ -146,6 +146,24 @@ for p in prices.data:
         print(p.printing, "unpriced on TCGPlayer since", p.no_market_price_since)
 ```
 
+### eBay sold prices (Pro+)
+
+`include="ebay"` adds an `ebay` field to each printing: the 30-day median eBay sold price
+for ungraded copies plus a `graded` dict keyed by grade (`"PSA 10"`, `"BGS 9.5"`, ...), or
+`None` when there is no eBay data. `include="ebay_sales"` also returns the sold listings.
+Costs 2 credits (`meta.credits_consumed`); below Pro it raises `TierError`.
+
+```python
+prices = tcg.cards.prices(123456, include="ebay")
+for p in prices.data:
+    if p.ebay:
+        psa10 = p.ebay.graded.get("PSA 10")
+        print(p.printing, p.ebay.median_30d, psa10.median_30d if psa10 else None)
+
+# Daily 30-day eBay median alongside the TCGPlayer history
+history = tcg.cards.history(123456, range="year", include="ebay")
+```
+
 ### Price history (Hobby+)
 
 ```python

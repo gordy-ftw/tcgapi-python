@@ -12,6 +12,9 @@ if TYPE_CHECKING:
     from ..client import TCGApi
 
 RangeLiteral = Literal["month", "quarter", "year", "all"]
+# Pro+; adds eBay sold prices (2 credits). "ebay_sales" also returns the sold listings.
+PricesIncludeLiteral = Literal["ebay", "ebay_sales"]
+HistoryIncludeLiteral = Literal["ebay"]
 
 
 class CardsResource:
@@ -22,8 +25,16 @@ class CardsResource:
         body = self._client._request("GET", f"/cards/{card_id}")
         return parse_response(Card, body)
 
-    def prices(self, card_id: int, *, printing: str | None = None) -> Response[list[Price]]:
-        body = self._client._request("GET", f"/cards/{card_id}/prices", {"printing": printing})
+    def prices(
+        self,
+        card_id: int,
+        *,
+        printing: str | None = None,
+        include: PricesIncludeLiteral | None = None,
+    ) -> Response[list[Price]]:
+        body = self._client._request(
+            "GET", f"/cards/{card_id}/prices", {"printing": printing, "include": include}
+        )
         return parse_response(list[Price], body)
 
     def conditions(
@@ -45,9 +56,12 @@ class CardsResource:
         *,
         range: RangeLiteral | None = None,
         printing: str | None = None,
+        include: HistoryIncludeLiteral | None = None,
     ) -> Response[list[PriceHistoryPoint]]:
         body = self._client._request(
-            "GET", f"/cards/{card_id}/history", {"range": range, "printing": printing}
+            "GET",
+            f"/cards/{card_id}/history",
+            {"range": range, "printing": printing, "include": include},
         )
         return parse_response(list[PriceHistoryPoint], body)
 
@@ -68,8 +82,16 @@ class AsyncCardsResource:
         body = await self._client._request("GET", f"/cards/{card_id}")
         return parse_response(Card, body)
 
-    async def prices(self, card_id: int, *, printing: str | None = None) -> Response[list[Price]]:
-        body = await self._client._request("GET", f"/cards/{card_id}/prices", {"printing": printing})
+    async def prices(
+        self,
+        card_id: int,
+        *,
+        printing: str | None = None,
+        include: PricesIncludeLiteral | None = None,
+    ) -> Response[list[Price]]:
+        body = await self._client._request(
+            "GET", f"/cards/{card_id}/prices", {"printing": printing, "include": include}
+        )
         return parse_response(list[Price], body)
 
     async def conditions(
@@ -91,9 +113,12 @@ class AsyncCardsResource:
         *,
         range: RangeLiteral | None = None,
         printing: str | None = None,
+        include: HistoryIncludeLiteral | None = None,
     ) -> Response[list[PriceHistoryPoint]]:
         body = await self._client._request(
-            "GET", f"/cards/{card_id}/history", {"range": range, "printing": printing}
+            "GET",
+            f"/cards/{card_id}/history",
+            {"range": range, "printing": printing, "include": include},
         )
         return parse_response(list[PriceHistoryPoint], body)
 

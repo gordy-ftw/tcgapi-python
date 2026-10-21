@@ -31,6 +31,11 @@ from .models import (
     CardWithPrice,
     ConditionMeta,
     ConditionPrice,
+    EbayHistoryGrade,
+    EbayHistoryPoint,
+    EbaySale,
+    EbayStats,
+    EbaySummary,
     Game,
     IdentifyCandidate,
     IdentifyMeta,
@@ -50,7 +55,7 @@ from .models import (
     UsageScans,
 )
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 __all__ = [
     "TCGApi",
     "AsyncTCGApi",
@@ -76,6 +81,11 @@ __all__ = [
     "Price",
     "PriceMover",
     "PriceHistoryPoint",
+    "EbayStats",
+    "EbaySummary",
+    "EbaySale",
+    "EbayHistoryPoint",
+    "EbayHistoryGrade",
     "BulkCard",
     "BulkPriceRow",
     "ConditionPrice",

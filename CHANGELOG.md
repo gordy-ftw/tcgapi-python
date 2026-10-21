@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0
+
+- `include` keyword on `cards.prices()` (`"ebay"` | `"ebay_sales"`) and `cards.history()`
+  (`"ebay"`), sync and async, Pro and up, 2 credits (`meta.credits_consumed`): adds `ebay`
+  to each row, `None` when there is no eBay data for the printing. Price rows get an
+  `EbaySummary` (30-day median sold price for ungraded copies, sales count, last sale,
+  `graded` per grade label, `as_of`; `sales: list[EbaySale]` only with `"ebay_sales"`);
+  history rows get an `EbayHistoryPoint` (30-day median and sales count, ungraded and per
+  grade via `EbayHistoryGrade`). Below Pro the API answers 403 `TIER_REQUIRED`
+  (`TierError`). New models `EbayStats`, `EbaySummary`, `EbaySale`, `EbayHistoryPoint`,
+  `EbayHistoryGrade`.
+
 ## 0.6.0
 
 - `no_market_price_since` on price rows (`Price`, `CardWithPrice`, `PriceMover`,

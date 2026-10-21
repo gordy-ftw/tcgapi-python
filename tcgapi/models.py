@@ -58,6 +58,60 @@ class Card(_Base):
     custom_attributes: dict[str, Any] | None = None
 
 
+class EbayStats(_Base):
+    """eBay sold-price figures for one printing (ungraded) or one grade."""
+
+    # Median sold price in the 30 days before as_of. None when nothing sold in the window.
+    median_30d: float | None = None
+    # Sales the median rests on.
+    sales_30d: int | None = None
+    # Latest sale, in or out of the window. On a Best Offer sale, the accepted offer.
+    last_price: float | None = None
+    last_sold: str | None = None
+
+
+class EbaySale(_Base):
+    """One eBay sold listing (only with include="ebay_sales")."""
+
+    sold_date: str | None = None
+    # Sold price; on a Best Offer sale, the accepted offer.
+    price: float | None = None
+    best_offer: bool | None = None
+    # Asking price, on Best Offer sales.
+    list_price: float | None = None
+    # Grade label (e.g. "PSA 10"); None = ungraded.
+    grade: str | None = None
+    # Ungraded sales only, when the title states one (Near Mint ... Damaged).
+    condition: str | None = None
+    title: str | None = None
+    url: str | None = None
+
+
+class EbaySummary(EbayStats):
+    """eBay sold listings for one printing. Top-level figures are ungraded copies of every condition."""
+
+    # Every grade that has sold, keyed by label ("PSA 10", "CGC 10 Pristine", "BGS 9.5").
+    graded: dict[str, EbayStats] = Field(default_factory=dict)
+    # Date the sales were last read. The 30-day window ends here.
+    as_of: str | None = None
+    # Only with include="ebay_sales": the included sales in the 30-day window, newest first.
+    sales: list[EbaySale] | None = None
+
+
+class EbayHistoryGrade(_Base):
+    median_30d: float | None = None
+    sales_30d: int | None = None
+
+
+class EbayHistoryPoint(_Base):
+    """eBay sold median for the 30 days up to a history row's date."""
+
+    median_30d: float | None = None
+    sales_30d: int | None = None
+    # Only grades with a sale in that window.
+    graded: dict[str, EbayHistoryGrade] = Field(default_factory=dict)
+
+
 class Price(_Base):
     card_id: int
     printing: str | None = None
@@ -80,6 +134,9 @@ class Price(_Base):
     sales_volume: int | None = None
     avg_sales_price: float | None = None
     sales_as_of: str | None = None
+    # eBay sold prices — only with include="ebay"/"ebay_sales" (Pro+, 2 credits);
+    # None when there is no eBay data for the printing (or include was not set).
+    ebay: EbaySummary | None = None
 
 
 class CardWithPrice(_Base):
@@ -195,6 +252,9 @@ class PriceHistoryPoint(_Base):
     low_price: float | None = None
     avg_sales_price: float | None = None
     sales_volume: int | None = None
+    # Only with include="ebay" on cards.history (Pro+, 2 credits). None before eBay sales
+    # for the printing are complete, or when there is no eBay data.
+    ebay: EbayHistoryPoint | None = None
 
 
 class Meta(_Base):
@@ -202,6 +262,8 @@ class Meta(_Base):
     page: int | None = None
     per_page: int | None = None
     has_more: bool | None = None
+    # 2 on requests with an eBay include; absent otherwise.
+    credits_consumed: int | None = None
 
 
 class ConditionMeta(Meta):

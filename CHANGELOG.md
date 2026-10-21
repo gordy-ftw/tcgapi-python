@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.0
+
+- `as_of` on `EbayHistoryPoint` (`cards.history()` with `include="ebay"`): present only on
+  days after the card's latest eBay read, which carry that read's figures; `as_of` is its
+  date (YYYY-MM-DD). Optional: `None` on other days.
+
 ## 0.9.0
 
 - `days` and `graded_days` on `EbaySummary` (card prices, bulk prices, identify prices)

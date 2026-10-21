@@ -156,6 +156,7 @@ for ungraded copies plus a `graded` dict keyed by grade (`"PSA 10"`, `"BGS 9.5"`
 Costs 2 credits (`meta.credits_consumed`); below Pro it raises `TierError`.
 `ebay.days` / `ebay.graded_days` say how many of the 30 window days the figures cover
 (30 = complete; lower in a card's first month of eBay tracking).
+On history rows after the card's latest eBay read, `ebay.as_of` is that read's date (the row carries its figures).
 
 ```python
 prices = tcg.cards.prices(123456, include="ebay")

@@ -127,6 +127,9 @@ class EbayHistoryPoint(_Base):
     graded: dict[str, EbayHistoryGrade] | None = Field(default_factory=dict)
     # The same as days for graded sales. Absent (None) when graded is None.
     graded_days: int | None = None
+    # Only on days after the card's latest eBay read: those days carry that read's figures,
+    # and this is its date (YYYY-MM-DD).
+    as_of: str | None = None
 
 
 class Price(_Base):

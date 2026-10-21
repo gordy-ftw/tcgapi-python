@@ -31,6 +31,12 @@ from .models import (
     CardWithPrice,
     ConditionMeta,
     ConditionPrice,
+    EbayCoverage,
+    EbayCoverageGame,
+    EbayCoverageRefresh,
+    EbayCoverageSet,
+    EbayCoverageTotals,
+    EbayGameCoverage,
     EbayHistoryGrade,
     EbayHistoryPoint,
     EbaySale,
@@ -56,7 +62,7 @@ from .models import (
     UsageScans,
 )
 
-__version__ = "0.10.0"
+__version__ = "0.11.0"
 __all__ = [
     "TCGApi",
     "AsyncTCGApi",
@@ -88,6 +94,12 @@ __all__ = [
     "EbayHistoryPoint",
     "EbayHistoryGrade",
     "EbaySlabGrade",
+    "EbayCoverage",
+    "EbayGameCoverage",
+    "EbayCoverageGame",
+    "EbayCoverageSet",
+    "EbayCoverageTotals",
+    "EbayCoverageRefresh",
     "BulkCard",
     "BulkPriceRow",
     "ConditionPrice",

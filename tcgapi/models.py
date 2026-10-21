@@ -96,8 +96,13 @@ class EbaySlabGrade(EbayStats):
 class EbaySummary(EbayStats):
     """eBay sold listings for one printing. Top-level figures are ungraded copies of every condition."""
 
+    # How many of the 30 window days the stored ungraded sales cover (30 = complete;
+    # lower in the first month of tracking).
+    days: int | None = None
     # Every grade that has sold, keyed by label ("PSA 10", "CGC 10 Pristine", "BGS 9.5").
     graded: dict[str, EbayStats] = Field(default_factory=dict)
+    # The same as days for graded sales, which start being tracked on their own date.
+    graded_days: int | None = None
     # Date the sales were last read. The 30-day window ends here.
     as_of: str | None = None
     # Only with include="ebay_sales": the included sales in the 30-day window, newest first.
@@ -116,8 +121,12 @@ class EbayHistoryPoint(_Base):
 
     median_30d: float | None = None
     sales_30d: int | None = None
-    # Only grades with a sale in that window.
-    graded: dict[str, EbayHistoryGrade] = Field(default_factory=dict)
+    # How many of that day's 30 window days the stored ungraded sales cover (30 = complete).
+    days: int | None = None
+    # Only grades with a sale in that window. None when graded sales were not yet complete that day.
+    graded: dict[str, EbayHistoryGrade] | None = Field(default_factory=dict)
+    # The same as days for graded sales. Absent (None) when graded is None.
+    graded_days: int | None = None
 
 
 class Price(_Base):

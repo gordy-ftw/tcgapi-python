@@ -34,6 +34,28 @@ def test_games_get_unknown_raises_not_found() -> None:
             tcg.games.get("definitely-not-a-real-game-xyz")
 
 
+def test_ebay_coverage_public() -> None:
+    with TCGApi() as tcg:
+        resp = tcg.ebay.coverage()
+        assert resp.data.totals.cards_with_ebay
+        assert len(resp.data.games) > 0
+        assert resp.data.games[0].refresh is not None
+        assert resp.data.games[0].refresh.three_day is not None
+
+
+def test_ebay_coverage_pokemon_sets() -> None:
+    with TCGApi() as tcg:
+        resp = tcg.ebay.coverage("pokemon")
+        assert resp.data.slug == "pokemon"
+        assert len(resp.data.sets) > 0
+
+
+def test_ebay_coverage_unknown_game_raises_not_found() -> None:
+    with TCGApi() as tcg:
+        with pytest.raises(NotFoundError):
+            tcg.ebay.coverage("definitely-not-a-real-game-xyz")
+
+
 def test_games_sets_for_pokemon() -> None:
     with TCGApi() as tcg:
         resp = tcg.games.sets("pokemon", per_page=3)
@@ -97,6 +119,12 @@ async def test_async_games_list() -> None:
     async with AsyncTCGApi() as tcg:
         resp = await tcg.games.list(per_page=3)
         assert len(resp.data) > 0
+
+
+async def test_async_ebay_coverage() -> None:
+    async with AsyncTCGApi() as tcg:
+        resp = await tcg.ebay.coverage("pokemon")
+        assert resp.data.slug == "pokemon"
 
 
 def _charizard_photo() -> bytes:

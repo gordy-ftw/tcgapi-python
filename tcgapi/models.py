@@ -240,6 +240,61 @@ class BulkCard(Card):
     prices: list[Price] = Field(default_factory=list)
 
 
+class EbayCoverageRefresh(_Base):
+    """Cards with eBay data by how often their sales are re-read."""
+
+    daily: int | None = None
+    # "3d" in the JSON
+    three_day: int | None = Field(default=None, alias="3d")
+    weekly: int | None = None
+    monthly: int | None = None
+
+
+class EbayCoverageGame(_Base):
+    """GET /ebay/coverage: eBay sold-price coverage for one game."""
+
+    # Game name
+    game: str
+    slug: str
+    cards: int | None = None
+    cards_with_ebay: int | None = None
+    coverage_pct: float | None = None
+    printings_with_ebay: int | None = None
+    # Date of the newest eBay read in this game (YYYY-MM-DD).
+    newest_as_of: str | None = None
+    refresh: EbayCoverageRefresh | None = None
+
+
+class EbayCoverageSet(_Base):
+    set_id: int
+    # Set name
+    set: str | None = None
+    cards: int | None = None
+    cards_with_ebay: int | None = None
+    coverage_pct: float | None = None
+
+
+class EbayCoverageTotals(_Base):
+    cards_with_ebay: int | None = None
+    printings_with_ebay: int | None = None
+    games: int | None = None
+
+
+class EbayCoverage(_Base):
+    """GET /ebay/coverage without game."""
+
+    totals: EbayCoverageTotals
+    games: list[EbayCoverageGame] = Field(default_factory=list)
+    computed_at: str | None = None
+
+
+class EbayGameCoverage(EbayCoverageGame):
+    """GET /ebay/coverage?game={slug}: the game plus per-set coverage."""
+
+    sets: list[EbayCoverageSet] = Field(default_factory=list)
+    computed_at: str | None = None
+
+
 class ConditionPrice(_Base):
     """Per-condition price floors for one (printing, condition) pair (Pro+)."""
 

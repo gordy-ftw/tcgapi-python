@@ -169,6 +169,9 @@ for p in prices.data:
 history = tcg.cards.history(123456, range="year", include="ebay")
 ```
 
+Which cards have eBay data: `tcg.ebay.coverage()` (per game) or `tcg.ebay.coverage("pokemon")`
+(per set). Public: no key needed, not counted against quota.
+
 ### Price history (Hobby+)
 
 ```python

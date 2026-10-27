@@ -109,6 +109,25 @@ print(conditions.meta.cached, conditions.meta.condition_counts)
 bulk_conditions = tcg.bulk.conditions([13217, 13218, 13219])
 ```
 
+### Listing supply (Pro+)
+
+```python
+# How much is for sale, from how many sellers, and how much sits near the market price.
+supply = tcg.cards.supply(13118)
+s = supply.data
+share = s.largest_listing.share if s.largest_listing else None
+print(f"{s.units} copies from {s.sellers} sellers; largest listing holds {share}")
+if s.near_market:
+    print(f"{s.near_market.units} copies within 10% of market: {s.near_market_days_of_supply} days of sales")
+
+# One point per read (about every 3 days), oldest first. History starts 2026-10-27.
+supply_history = tcg.cards.supply_history(13118, days=90)
+
+# Bulk variant — up to 500 products per call, auto-chunks above that.
+# Products with no supply recorded yet are absent.
+bulk_supply = tcg.bulk.supply([13118, 13217, 13218])
+```
+
 ### Top movers
 
 ```python

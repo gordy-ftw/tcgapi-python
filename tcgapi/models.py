@@ -358,6 +358,120 @@ class ConditionMeta(Meta):
     condition_counts: dict[str, int] | None = None
 
 
+class SupplyLadderStep(_Base):
+    """Listings priced at or under one step of a printing's market price.
+
+    Photo (custom) listings are left out — sellers list opened boxes and lots under
+    sealed products.
+    """
+
+    # Step as a share of the market price: 0.9, 1.0, 1.1, 1.25 or 1.5.
+    max_pct: float
+    # Listing price (before shipping) at most this.
+    max_price: float | None = None
+    listings: int | None = None
+    # Copies for sale across those listings.
+    units: int | None = None
+    sellers: int | None = None
+    # False when only the cheapest 50 listings could be itemised, so listings, units and
+    # sellers are lower bounds.
+    exact: bool | None = None
+
+
+class SupplyNearMarket(_Base):
+    """The 110% ladder step summed over printings (each against its own market price)."""
+
+    listings: int | None = None
+    units: int | None = None
+    # Summed per printing, so a seller listing two printings counts twice.
+    sellers: int | None = None
+    # True only when every printing's 110% step is exact.
+    exact: bool | None = None
+
+
+class SupplyLargestListing(_Base):
+    """The listing with the most copies and its share (0-1) of all units."""
+
+    quantity: int
+    share: float | None = None
+
+
+class SupplyPrinting(_Base):
+    """One price ladder per printing that has a market price."""
+
+    printing: str
+    # The market price the ladder was measured against, as of last_updated_at.
+    market_price: float | None = None
+    ladder: list[SupplyLadderStep] = Field(default_factory=list)
+
+
+class ListingSupply(_Base):
+    """GET /cards/{id}/supply and rows of /bulk/supply (Pro+).
+
+    How much of a product is for sale on TCGPlayer, from how many sellers, and how much
+    of it sits near the market price. English listings priced for US shipping, read
+    about every 3 days per product. Counts only; no seller identities.
+    """
+
+    card_id: int
+    name: str | None = None
+    tcgplayer_id: int | None = None
+    # Active listings, all conditions and printings (photo listings included).
+    listings: int | None = None
+    # Copies for sale across all listings.
+    units: int | None = None
+    # Distinct sellers. None when it could not be counted.
+    sellers: int | None = None
+    # None when units are unknown or 0.
+    largest_listing: SupplyLargestListing | None = None
+    # Listings with exactly one copy.
+    single_unit_listings: int | None = None
+    # True when every listing was itemised (not just counted).
+    complete: bool | None = None
+    # near_market.listings == 0 means nobody is selling near the market price.
+    # None when no printing has a market price.
+    near_market: SupplyNearMarket | None = None
+    # Copies sold over the last 30 days (all printings).
+    sales_30d: int | None = None
+    # sales_30d divided by the days with recorded sales. None with fewer than 7 recorded days.
+    sales_per_day: float | None = None
+    # units / sales_per_day. None when sales_per_day is None or 0.
+    days_of_supply: float | None = None
+    # near_market.units / sales_per_day.
+    near_market_days_of_supply: float | None = None
+    # Listings per condition, e.g. {"Near Mint": 40}.
+    by_condition: dict[str, int] = Field(default_factory=dict)
+    # Listings per printing, e.g. {"Normal": 205}.
+    by_printing: dict[str, int] = Field(default_factory=dict)
+    printings: list[SupplyPrinting] = Field(default_factory=list)
+    last_updated_at: str | None = None
+
+
+class SupplyMeta(Meta):
+    """Meta for /cards/{id}/supply."""
+
+    # When the listings were read (same as data.last_updated_at).
+    as_of: str | None = None
+
+
+class SupplyHistoryPoint(_Base):
+    """One point of /cards/{id}/supply/history: one per day the listings were read.
+
+    Reads happen about every 3 days per product; history starts 2026-10-27.
+    """
+
+    # YYYY-MM-DD (UTC).
+    date: str
+    listings: int | None = None
+    units: int | None = None
+    sellers: int | None = None
+    # The near-market (110%) step; None when no printing had a market price that day.
+    near_market_listings: int | None = None
+    near_market_units: int | None = None
+    near_market_sellers: int | None = None
+    near_market_exact: bool | None = None
+
+
 class RateLimit(_Base):
     daily_limit: int
     daily_remaining: int

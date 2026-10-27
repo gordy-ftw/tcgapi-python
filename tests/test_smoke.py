@@ -115,6 +115,40 @@ def test_bulk_conditions() -> None:
             pass  # sub-Pro keys get the tier gate — that shape is also correct
 
 
+@pytest.mark.skipif(HAS_KEY, reason="without a key we expect a 402")
+def test_supply_without_key_raises_402() -> None:
+    with TCGApi() as tcg:
+        for call in (lambda: tcg.cards.supply(13118), lambda: tcg.cards.supply_history(13118), lambda: tcg.bulk.supply([13118])):
+            with pytest.raises(TcgApiError) as exc_info:
+                call()
+            assert exc_info.value.status == 402
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="cards.supply is Pro-gated; needs API key")
+def test_supply() -> None:
+    with TCGApi() as tcg:
+        try:
+            resp = tcg.cards.supply(13118)
+            assert resp.data.card_id == 13118
+            assert isinstance(resp.data.printings, list)
+            history = tcg.cards.supply_history(13118, days=30)
+            assert len(history.data) > 0
+            bulk = tcg.bulk.supply([13118])
+            assert [s.card_id for s in bulk.data] == [13118]
+        except TierError:
+            pass  # sub-Pro keys get the tier gate — that shape is also correct
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="cards.supply is Pro-gated; needs API key")
+async def test_async_supply() -> None:
+    async with AsyncTCGApi() as tcg:
+        try:
+            resp = await tcg.cards.supply(13118)
+            assert resp.data.card_id == 13118
+        except TierError:
+            pass
+
+
 async def test_async_games_list() -> None:
     async with AsyncTCGApi() as tcg:
         resp = await tcg.games.list(per_page=3)

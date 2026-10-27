@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-from ..models import BulkCard, BulkConditionRow, BulkPriceRow, Meta, PriceHistoryPoint, Response
+from ..models import (
+    BulkCard,
+    BulkConditionRow,
+    BulkPriceRow,
+    ListingSupply,
+    Meta,
+    PriceHistoryPoint,
+    Response,
+)
 from ._base import parse_response
 
 if TYPE_CHECKING:
@@ -15,6 +23,7 @@ BULK_PRICES_MAX = 500
 BULK_CARDS_MAX = 100
 BULK_HISTORY_MAX = 50
 BULK_CONDITIONS_MAX = 500
+BULK_SUPPLY_MAX = 500
 
 RangeLiteral = Literal["month", "quarter", "year", "all"]
 # Pro+; adds each row's eBay summary (1 credit plus 1 per card with eBay data).
@@ -85,6 +94,22 @@ class BulkResource:
         return Response[list[BulkConditionRow]](
             data=rows, rate_limit=last.rate_limit if last else None
         )
+
+    def supply(self, ids: list[int]) -> Response[list[ListingSupply]]:
+        # Pro+ only. Listing supply (see cards.supply()) for up to 500 products per call,
+        # ordered by card_id within each call. Products with no supply recorded yet are absent.
+        if len(ids) <= BULK_SUPPLY_MAX:
+            body = self._client._request("GET", "/bulk/supply", {"ids": _ids(ids)})
+            return parse_response(list[ListingSupply], body)
+        rows: list[ListingSupply] = []
+        last: Response[list[ListingSupply]] | None = None
+        for i in range(0, len(ids), BULK_SUPPLY_MAX):
+            chunk = ids[i : i + BULK_SUPPLY_MAX]
+            body = self._client._request("GET", "/bulk/supply", {"ids": _ids(chunk)})
+            resp: Response[list[ListingSupply]] = parse_response(list[ListingSupply], body)
+            rows.extend(resp.data)
+            last = resp
+        return Response[list[ListingSupply]](data=rows, rate_limit=last.rate_limit if last else None)
 
     def history(
         self,
@@ -172,6 +197,22 @@ class AsyncBulkResource:
         return Response[list[BulkConditionRow]](
             data=rows, rate_limit=last.rate_limit if last else None
         )
+
+    async def supply(self, ids: list[int]) -> Response[list[ListingSupply]]:
+        # Pro+ only. Listing supply (see cards.supply()) for up to 500 products per call,
+        # ordered by card_id within each call. Products with no supply recorded yet are absent.
+        if len(ids) <= BULK_SUPPLY_MAX:
+            body = await self._client._request("GET", "/bulk/supply", {"ids": _ids(ids)})
+            return parse_response(list[ListingSupply], body)
+        rows: list[ListingSupply] = []
+        last: Response[list[ListingSupply]] | None = None
+        for i in range(0, len(ids), BULK_SUPPLY_MAX):
+            chunk = ids[i : i + BULK_SUPPLY_MAX]
+            body = await self._client._request("GET", "/bulk/supply", {"ids": _ids(chunk)})
+            resp: Response[list[ListingSupply]] = parse_response(list[ListingSupply], body)
+            rows.extend(resp.data)
+            last = resp
+        return Response[list[ListingSupply]](data=rows, rate_limit=last.rate_limit if last else None)
 
     async def history(
         self,

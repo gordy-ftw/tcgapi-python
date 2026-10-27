@@ -48,6 +48,7 @@ from .models import (
     IdentifyMeta,
     IdentifyRead,
     IdentifyResult,
+    ListingSupply,
     Meta,
     Price,
     PriceHistoryPoint,
@@ -58,11 +59,17 @@ from .models import (
     ScanLedgerEntry,
     ScanUsage,
     Set,
+    SupplyHistoryPoint,
+    SupplyLadderStep,
+    SupplyLargestListing,
+    SupplyMeta,
+    SupplyNearMarket,
+    SupplyPrinting,
     UsageResponse,
     UsageScans,
 )
 
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 __all__ = [
     "TCGApi",
     "AsyncTCGApi",
@@ -105,6 +112,13 @@ __all__ = [
     "ConditionPrice",
     "BulkConditionRow",
     "ConditionMeta",
+    "ListingSupply",
+    "SupplyLadderStep",
+    "SupplyLargestListing",
+    "SupplyNearMarket",
+    "SupplyPrinting",
+    "SupplyMeta",
+    "SupplyHistoryPoint",
     "ApiKeySummary",
     "ApiKeyCreated",
     "UsageResponse",

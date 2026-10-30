@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.13.0
+
+- `cards.cardmarket_prices(card_id, printing=None)` (`GET /v1/cards/{id}/prices/cardmarket`, sync and async):
+  Cardmarket EU prices in EUR per printing, from Cardmarket's daily price guide (`CardmarketPrice`) —
+  `price_trend`, `avg_sell_price`, `low_price`, `avg_1d`/`avg_7d`/`avg_30d`, `last_updated_at` (the guide's
+  date), and the Cardmarket product (`cm_product_id`, `cm_name`, `cm_url`) and series it reads (`cm_series`:
+  `"regular"` or `"foil"`; Pokemon's foil series is reverse holo). Where Cardmarket sells a card's editions as
+  one product (Yu-Gi-Oh! 1st Edition + Unlimited) the card has one `"All editions"` row with
+  `editions_blended=True`. `NotFoundError` when Cardmarket has no matching product for the card.
+- `sets.cardmarket_prices(set_id, limit=None, offset=None)` (`GET /v1/sets/{id}/prices/cardmarket`), Pro and
+  up: every card in a set, highest trend first (`CardmarketSetPrice` adds `name`, `number`, `tcgplayer_id`).
+- `cardmarket.coverage()` (`GET /v1/cardmarket/coverage`): cards, printings and priced printings per game
+  (`CardmarketCoverage`, `CardmarketCoverageGame`; recomputed daily).
+
 ## 0.12.0
 
 - `cards.supply(card_id)` (`GET /v1/cards/{id}/supply`, sync and async), Pro and up:

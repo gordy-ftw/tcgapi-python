@@ -8,6 +8,7 @@ import httpx
 
 from ._transport import _BaseTransport
 from .resources.bulk import BulkResource
+from .resources.cardmarket import CardmarketResource
 from .resources.cards import CardsResource
 from .resources.ebay import EbayResource
 from .resources.export import ExportResource
@@ -51,6 +52,7 @@ class TCGApi(_BaseTransport):
         self.usage = UsageResource(self)
         self.identify = IdentifyResource(self)
         self.ebay = EbayResource(self)
+        self.cardmarket = CardmarketResource(self)
 
     def _request(
         self,

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Literal
 from ..models import (
     BulkCard,
     Card,
+    CardmarketPrice,
     ConditionMeta,
     ConditionPrice,
     ListingSupply,
@@ -56,6 +57,13 @@ class CardsResource:
             "GET", f"/cards/{card_id}/prices/conditions", {"printing": printing}
         )
         return parse_response(list[ConditionPrice], body, meta_model=ConditionMeta)
+
+    def cardmarket_prices(self, card_id: int, *, printing: str | None = None) -> Response[list[CardmarketPrice]]:
+        # Cardmarket EU prices (EUR) per printing, from Cardmarket's daily price guide. A card whose
+        # editions Cardmarket sells as one product has one "All editions" row (editions_blended).
+        # NotFoundError when Cardmarket has no matching product for the card.
+        body = self._client._request("GET", f"/cards/{card_id}/prices/cardmarket", {"printing": printing})
+        return parse_response(list[CardmarketPrice], body)
 
     def supply(self, card_id: int) -> Response[ListingSupply]:
         # Pro+ only. Listing supply: listings, copies, sellers, a price ladder per printing
@@ -126,6 +134,11 @@ class AsyncCardsResource:
             "GET", f"/cards/{card_id}/prices/conditions", {"printing": printing}
         )
         return parse_response(list[ConditionPrice], body, meta_model=ConditionMeta)
+
+    async def cardmarket_prices(self, card_id: int, *, printing: str | None = None) -> Response[list[CardmarketPrice]]:
+        # Async variant of CardsResource.cardmarket_prices.
+        body = await self._client._request("GET", f"/cards/{card_id}/prices/cardmarket", {"printing": printing})
+        return parse_response(list[CardmarketPrice], body)
 
     async def supply(self, card_id: int) -> Response[ListingSupply]:
         # Pro+ only. Listing supply: listings, copies, sellers, a price ladder per printing

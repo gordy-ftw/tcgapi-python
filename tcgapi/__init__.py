@@ -28,6 +28,10 @@ from .models import (
     BulkConditionRow,
     BulkPriceRow,
     Card,
+    CardmarketCoverage,
+    CardmarketCoverageGame,
+    CardmarketPrice,
+    CardmarketSetPrice,
     CardWithPrice,
     ConditionMeta,
     ConditionPrice,
@@ -69,7 +73,7 @@ from .models import (
     UsageScans,
 )
 
-__version__ = "0.12.0"
+__version__ = "0.13.0"
 __all__ = [
     "TCGApi",
     "AsyncTCGApi",
@@ -95,6 +99,10 @@ __all__ = [
     "Price",
     "PriceMover",
     "PriceHistoryPoint",
+    "CardmarketPrice",
+    "CardmarketSetPrice",
+    "CardmarketCoverage",
+    "CardmarketCoverageGame",
     "EbayStats",
     "EbaySummary",
     "EbaySale",

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, AsyncIterator, Iterator, Literal
 
-from ..models import BulkPriceRow, CardWithPrice, Response, Set
+from ..models import BulkPriceRow, CardmarketSetPrice, CardWithPrice, Response, Set
 from ._base import parse_response
 
 if TYPE_CHECKING:
@@ -52,6 +52,13 @@ class SetsResource:
     def prices(self, set_id: int) -> Response[list[BulkPriceRow]]:
         body = self._client._request("GET", f"/sets/{set_id}/prices")
         return parse_response(list[BulkPriceRow], body)
+
+    def cardmarket_prices(
+        self, set_id: int, *, limit: int | None = None, offset: int | None = None
+    ) -> Response[list[CardmarketSetPrice]]:
+        # Pro+ only. Cardmarket EU prices for every card in a set, highest trend first.
+        body = self._client._request("GET", f"/sets/{set_id}/prices/cardmarket", {"limit": limit, "offset": offset})
+        return parse_response(list[CardmarketSetPrice], body)
 
     def iter_cards(self, set_id: int, **params: object) -> Iterator[CardWithPrice]:
         """Paginate through every card in a set, yielding one at a time."""
@@ -102,6 +109,13 @@ class AsyncSetsResource:
     async def prices(self, set_id: int) -> Response[list[BulkPriceRow]]:
         body = await self._client._request("GET", f"/sets/{set_id}/prices")
         return parse_response(list[BulkPriceRow], body)
+
+    async def cardmarket_prices(
+        self, set_id: int, *, limit: int | None = None, offset: int | None = None
+    ) -> Response[list[CardmarketSetPrice]]:
+        # Async variant of SetsResource.cardmarket_prices.
+        body = await self._client._request("GET", f"/sets/{set_id}/prices/cardmarket", {"limit": limit, "offset": offset})
+        return parse_response(list[CardmarketSetPrice], body)
 
     async def iter_cards(self, set_id: int, **params: object) -> AsyncIterator[CardWithPrice]:
         page = int(params.pop("page", 1) or 1)  # type: ignore[arg-type]

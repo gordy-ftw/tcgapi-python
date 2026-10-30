@@ -208,3 +208,31 @@ async def test_async_identify_usage() -> None:
     async with AsyncTCGApi() as tcg:
         resp = await tcg.identify.usage()
         assert len(resp.data.days) == 30
+
+
+@pytest.mark.skipif(HAS_KEY, reason="without a key we expect a 402")
+def test_cardmarket_without_key_raises_402() -> None:
+    with TCGApi() as tcg:
+        calls = (lambda: tcg.cards.cardmarket_prices(5846), lambda: tcg.sets.cardmarket_prices(100001, limit=1),
+                 lambda: tcg.cardmarket.coverage())
+        for call in calls:
+            with pytest.raises(TcgApiError) as exc_info:
+                call()
+            assert exc_info.value.status == 402
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="needs API key")
+def test_cardmarket_prices() -> None:
+    with TCGApi() as tcg:
+        resp = tcg.cards.cardmarket_prices(5846)
+        assert resp.data and all(r.card_id == 5846 and r.currency == "EUR" for r in resp.data)
+        assert all(r.cm_series in ("regular", "foil") for r in resp.data)
+        cov = tcg.cardmarket.coverage()
+        assert cov.data.total_cards > 0 and cov.data.games
+
+
+@pytest.mark.skipif(not HAS_KEY, reason="needs API key")
+async def test_async_cardmarket_prices() -> None:
+    async with AsyncTCGApi() as tcg:
+        resp = await tcg.cards.cardmarket_prices(5846)
+        assert resp.data and resp.data[0].card_id == 5846

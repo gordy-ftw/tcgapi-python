@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -293,6 +293,61 @@ class EbayGameCoverage(EbayCoverageGame):
 
     sets: list[EbayCoverageSet] = Field(default_factory=list)
     computed_at: str | None = None
+
+
+class CardmarketPrice(_Base):
+    """One printing's Cardmarket price (EUR) from Cardmarket's daily price guide.
+
+    Each printing reads one Cardmarket product and one of its two series: regular, or foil (Pokemon:
+    reverse holo). Where Cardmarket sells a card's editions as one product (Yu-Gi-Oh! 1st Edition +
+    Unlimited) the card has one row with printing "All editions" and editions_blended True.
+    """
+
+    card_id: int
+    printing: str
+    editions_blended: bool = False
+    price_trend: float | None = None
+    avg_sell_price: float | None = None
+    low_price: float | None = None  # lowest listing
+    avg_1d: float | None = None
+    avg_7d: float | None = None
+    avg_30d: float | None = None
+    currency: str = "EUR"
+    last_updated_at: str | None = None  # date of the price guide the price came from
+    cm_product_id: int
+    cm_name: str
+    cm_url: str | None = None
+    cm_series: Literal["regular", "foil"]
+    match_method: str | None = None
+
+
+class CardmarketSetPrice(CardmarketPrice):
+    """A row of GET /sets/{id}/prices/cardmarket: the price plus the card's name, number and TCGPlayer id."""
+
+    name: str
+    number: str | None = None
+    tcgplayer_id: int | None = None
+
+
+class CardmarketCoverageGame(_Base):
+    game_id: int
+    game: str | None = None
+    game_slug: str | None = None
+    cards: int
+    printings: int
+    priced_printings: int
+    updated_at: str | None = None
+
+
+class CardmarketCoverage(_Base):
+    """GET /cardmarket/coverage: cards, printings and priced printings per game (recomputed daily)."""
+
+    total_cards: int
+    total_printings: int
+    total_priced_printings: int
+    price_guide_oldest: str | None = None
+    price_guide_newest: str | None = None
+    games: list[CardmarketCoverageGame] = Field(default_factory=list)
 
 
 class ConditionPrice(_Base):

@@ -218,6 +218,25 @@ asyncio.run(main())
 ```
 
 
+### Cardmarket (EU) prices
+
+`cards.cardmarket_prices(card_id)` returns Cardmarket's prices in EUR per printing, from Cardmarket's
+daily price guide: `price_trend`, `avg_sell_price`, `low_price` and 1/7/30-day averages, with
+`last_updated_at` the guide's date. `cm_series` says which of the product's two series the printing
+reads (`"regular"`, or `"foil"` — reverse holo for Pokemon). Where Cardmarket sells a card's editions as
+one product (Yu-Gi-Oh! 1st Edition + Unlimited) there is one `"All editions"` row with
+`editions_blended=True`. Raises `NotFoundError` when Cardmarket has no matching product.
+
+```python
+cm = tcg.cards.cardmarket_prices(123456)
+for p in cm.data:
+    print(p.printing, p.price_trend, p.currency, p.cm_url)
+
+# Every card in a set (Pro+), and coverage per game
+rows = tcg.sets.cardmarket_prices(100001, limit=100)
+coverage = tcg.cardmarket.coverage()
+```
+
 ### Identify a card from a photo
 
 `identify.photo()` reads one photo of a card, slab or sealed product and returns ranked

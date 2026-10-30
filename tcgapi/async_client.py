@@ -8,6 +8,7 @@ import httpx
 
 from ._transport import _BaseTransport
 from .resources.bulk import AsyncBulkResource
+from .resources.cardmarket import AsyncCardmarketResource
 from .resources.cards import AsyncCardsResource
 from .resources.ebay import AsyncEbayResource
 from .resources.export import AsyncExportResource
@@ -47,6 +48,7 @@ class AsyncTCGApi(_BaseTransport):
         self.usage = AsyncUsageResource(self)
         self.identify = AsyncIdentifyResource(self)
         self.ebay = AsyncEbayResource(self)
+        self.cardmarket = AsyncCardmarketResource(self)
 
     async def _request(
         self,

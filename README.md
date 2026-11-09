@@ -225,7 +225,7 @@ daily price guide: `price_trend`, `avg_sell_price`, `low_price` and 1/7/30-day a
 `last_updated_at` the guide's date. `cm_series` says which of the product's two series the printing
 reads (`"regular"`, or `"foil"` — reverse holo for Pokemon). Where Cardmarket sells a card's editions as
 one product (Yu-Gi-Oh! 1st Edition + Unlimited) there is one `"All editions"` row with
-`editions_blended=True`. Raises `NotFoundError` when Cardmarket has no matching product.
+`editions_blended=True`. Returns an empty list when Cardmarket has no matching product.
 
 ```python
 cm = tcg.cards.cardmarket_prices(123456)

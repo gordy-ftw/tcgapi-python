@@ -61,7 +61,8 @@ class CardsResource:
     def cardmarket_prices(self, card_id: int, *, printing: str | None = None) -> Response[list[CardmarketPrice]]:
         # Cardmarket EU prices (EUR) per printing, from Cardmarket's daily price guide. A card whose
         # editions Cardmarket sells as one product has one "All editions" row (editions_blended).
-        # NotFoundError when Cardmarket has no matching product for the card.
+        # An empty list when Cardmarket has no matching product for the card; NotFoundError only
+        # for an unknown card id.
         body = self._client._request("GET", f"/cards/{card_id}/prices/cardmarket", {"printing": printing})
         return parse_response(list[CardmarketPrice], body)
 

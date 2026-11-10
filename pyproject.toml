@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tcgapi"
-version = "0.13.1"
-description = "Official Python SDK for tcgapi.dev — pricing data for Pokemon, Magic: The Gathering, Yu-Gi-Oh!, Lorcana, One Piece, and 80+ more trading card games."
+version = "0.13.2"
+description = "Official Python SDK for tcgapi.dev — pricing data for Pokemon, Magic: The Gathering, Yu-Gi-Oh!, Lorcana, One Piece, and 50+ more trading card games."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }

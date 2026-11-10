@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.2
+
+- Docs only, no code change: the README and the package description now say 50+ trading card games
+  (they said 89+ and 80+), matching tcgapi.dev.
+
 ## 0.13.1
 
 - Docs only, no code change: `cards.cardmarket_prices` now returns an empty list when Cardmarket has no

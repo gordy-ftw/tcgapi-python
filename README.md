@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/tcgapi.svg)](https://pypi.org/project/tcgapi/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Official Python SDK for [**tcgapi.dev**](https://tcgapi.dev) — a unified pricing API for **89+ trading card games**, including:
+Official Python SDK for [**tcgapi.dev**](https://tcgapi.dev) — a unified pricing API for **50+ trading card games**, including:
 
 - Pokémon TCG (English + Japanese)
 - Magic: The Gathering

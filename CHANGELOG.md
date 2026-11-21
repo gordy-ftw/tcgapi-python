@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.0
+
+- `identify.photo`: `meta.charged` can now be `"repeat"`. A photo the account already sent in the last 24 hours is answered from its first read without using a scan:
+  `scans_remaining` is the unchanged balance, and matches and prices are looked up again. No code change
+  (`charged` was already a plain string); docs and the smoke test only.
+
 ## 0.13.2
 
 - Docs only, no code change: the README and the package description now say 50+ trading card games

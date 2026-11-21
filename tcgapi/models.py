@@ -680,7 +680,8 @@ class IdentifyResult(_Base):
 
 
 class IdentifyMeta(Meta):
-    # "scan" or "x402"
+    # "scan", "x402", or "repeat": the account sent this same photo in the last 24 hours,
+    # so the answer comes from that first read and no scan is used
     charged: str | None = None
     # Scans left after this one (API-key requests)
     scans_remaining: int | None = None

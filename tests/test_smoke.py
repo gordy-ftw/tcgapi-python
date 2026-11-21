@@ -183,7 +183,8 @@ def test_identify_reads_a_card() -> None:
         resp = tcg.identify.photo(_charizard_photo(), game="pokemon", include_prices=True)
         assert resp.data.candidates[0].tcgplayer_id == 42382
         assert resp.data.candidates[0].prices
-        assert resp.meta is not None and resp.meta.charged == "scan"
+        # "repeat": the same photo within 24 hours is answered from its first read, without a scan
+        assert resp.meta is not None and resp.meta.charged in ("scan", "repeat")
 
 
 @pytest.mark.skipif(HAS_KEY, reason="checks the keyless path")

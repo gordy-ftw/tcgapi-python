@@ -52,6 +52,8 @@ class IdentifyResource:
         Uses one scan from the account's balance (25 free, then prepaid packs),
         apart from the daily request quota. A 402 with code SCAN_BALANCE_EMPTY
         means no scans are left. `meta` is an IdentifyMeta (scans_remaining).
+        The same photo sent again within 24 hours uses no scan: `meta.charged`
+        is then "repeat".
         """
         body = self._client._request(
             "POST",
